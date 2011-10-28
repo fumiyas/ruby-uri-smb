@@ -24,8 +24,43 @@ module URI
       :broadcast, :nodetype, :scopeid,
     ].freeze
 
-    def initialize(*arg)
-      super(*arg)
+    URI::REGEXP::PATTERN.const_set(
+      :NETBIOSHOSTNAME,
+      '[a-zA-Z\d_][a-zA-Z\d_\-]{1,14}'
+    )
+    URI.const_set(
+      :NETBIOSHOSTNAME,
+      Regexp.new(URI::REGEXP::PATTERN::NETBIOSHOSTNAME)
+    )
+    URI::REGEXP::PATTERN.const_set(
+      :SMBHOSTNAME,
+      "#{URI::REGEXP::PATTERN::HOSTNAME}|#{URI::REGEXP::PATTERN::NETBIOSHOSTNAME}"
+    )
+    URI.const_set(
+      :SMBHOSTNAME,
+      Regexp.new(URI::REGEXP::PATTERN::SMBHOSTNAME)
+    )
+
+    DEFAULT_PARSER = URI::Parser.new(:HOSTNAME=>URI::REGEXP::PATTERN::SMBHOSTNAME)
+
+    def self.parse(uri)
+      DEFAULT_PARSER.parse(uri)
+    end
+
+    def initialize(scheme,
+                   userinfo, host, port, registry,
+                   path, opaque,
+                   query,
+                   fragment,
+		   parser = DEFAULT_PARSER,
+                   arg_check = false)
+      super(scheme,
+        userinfo, host, port, registry,
+        path, opaque,
+        query,
+        fragment,
+        parser,
+        arg_check)
 
       if @fragment
         raise InvalidURIError, 'bad SMB URI'

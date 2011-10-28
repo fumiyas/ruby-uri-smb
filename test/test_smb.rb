@@ -15,19 +15,19 @@ class TestSMB < Test::Unit::TestCase
   end
 
   def test_parse
-    url = 'smb://example.jp/share/path'
-    u = URI.parse(url)
+    uri = 'smb://example.jp/share/path'
+    u = URI.parse(uri)
     assert_kind_of(URI::SMB, u)
-    assert_equal(url, u.to_s)
+    assert_equal(uri, u.to_s)
     assert_equal('smb', u.scheme)
     assert_equal('example.jp', u.host)
     assert_equal('/share/path', u.path)
 
-    url = 'smb://domain;user:pass@example.jp/share/path'
-    u = URI.parse(url)
+    uri = 'smb://domain;user:pass@example.jp/share/path'
+    u = URI.parse(uri)
     assert_equal('domain;user:pass', u.userinfo)
 
-    urls = {
+    uris = {
       'smb://server' =>
       ['smb', nil, 'server', URI::SMB::DEFAULT_PORT,
        '', '',
@@ -40,7 +40,7 @@ class TestSMB < Test::Unit::TestCase
        nil, nil, nil],
       'smb://server/share?nbns=10.0.0.1&workgroup=DOMAIN' =>
       ['smb', nil, 'server', URI::SMB::DEFAULT_PORT,
-       'share', '/share/path',
+       'share', '/share',
        '10.0.0.1', 'DOMAIN', nil, nil,
        nil, nil, nil],
       'smb://server/share?wins=10.0.0.1&ntdomain=DOMAIN' =>
@@ -58,10 +58,24 @@ class TestSMB < Test::Unit::TestCase
        'share', '/share/path',
        nil, nil, nil, nil,
        '10.255.255.255', 'P', 'foo'],
-    }.each do |url, ary|
-      u = URI.parse(url)
+    }.each do |uri, ary|
+      u = URI.parse(uri)
       assert_equal(ary, uri_to_ary(u))
     end
+
+    assert_raise(URI::InvalidURIError) do
+      URI.parse('smb://foo_bar/share/path')
+    end
+  end
+
+  def test_parse_smbhostname
+    uri = 'smb://foo_bar/share/path'
+    u = URI::SMB.parse(uri)
+    assert_kind_of(URI::SMB, u)
+    assert_equal(uri, u.to_s)
+    assert_equal('smb', u.scheme)
+    assert_equal('foo_bar', u.host)
+    assert_equal('/share/path', u.path)
   end
 end
 
