@@ -102,10 +102,10 @@ module URI
       @nodetype = params.delete('nodetype')
       @scopeid = params.delete('scopeid')
 
-      #unless params.empty?
-      #  raise InvalidURIError,
-      #        "bad query parameter(s) in SMB URI: #{params.keys.join(',')}"
-      #end
+      unless params.empty?
+        raise InvalidURIError,
+              "bad query parameter(s) in SMB URI: #{params.keys.join(',')}"
+      end
       build_query
     end
     private :parse_query
