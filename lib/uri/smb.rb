@@ -1,21 +1,21 @@
 ## Ruby: URI::SMB class
-## Copyright (c) 2007-2008 SATOH Fumiyasu @ OSS Technology, Corp.
-##                         <http://www.osstech.co.jp/>
 ##
+## Author:: SATOH Fumiyasu
+## Copyright:: (c) 2007-2011 SATOH Fumiyasu @ OSS Technology, Corp.
 ## License:: You can redistribute it and/or modify it under the same term as Ruby.
-## Date: 2011-10-28, since 2007-07-06
-##
-
-## Implementing CIFS - Appendix D: The SMB URL
-## http://ubiqx.org/cifs/Appendix-D.html
+## Date:: 2011-10-28, since 2007-07-06
 
 require 'uri'
 require 'cgi'
 
 module URI
 
+  ## SMB URI class. See also: Implementing CIFS - Appendix D: The SMB URL:
+  ## http://ubiqx.org/cifs/Appendix-D.html
   class SMB < Generic
+    ## A default port of 445 for URI::SMB
     DEFAULT_PORT = 445
+    ## An Array of the available components for URI::SMB
     COMPONENT = [
       :scheme,
       :userinfo, :host, :port,
