@@ -133,6 +133,7 @@ module URI
       build_path
       return @share
     end
+    protected :set_share
 
     def nbns
       return @nbns
@@ -144,6 +145,7 @@ module URI
       build_query
       return @nbns
     end
+    protected :set_nbns
 
     def workgroup
       return @workgroup
@@ -155,6 +157,7 @@ module URI
       build_query
       return @workgroup
     end
+    protected :set_workgroup
 
     def calling
       return @calling
@@ -165,6 +168,7 @@ module URI
       build_query
       return @calling
     end
+    protected :set_calling
 
     def called
       return @called
@@ -175,6 +179,7 @@ module URI
       build_query
       return @called
     end
+    protected :set_called
 
     def broadcast
       return @broadcast
@@ -185,6 +190,7 @@ module URI
       build_query
       return @broadcast
     end
+    protected :set_broadcast
 
     def nodetype
       return @nodetype
@@ -195,6 +201,7 @@ module URI
       build_query
       return @nodetype
     end
+    protected :set_nodetype
 
     def scopeid
       return @scopeid
@@ -205,6 +212,7 @@ module URI
       build_query
       return @scopeid
     end
+    protected :set_scopeid
   end
 
   @@schemes['SMB'] = SMB
