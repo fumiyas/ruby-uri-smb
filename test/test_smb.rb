@@ -68,7 +68,7 @@ class TestSMB < Test::Unit::TestCase
     end
   end
 
-  def test_parse_smbhostname
+  def test_parse_netbioshostname
     uri = 'smb://foo_bar/share/path'
     u = URI::SMB.parse(uri)
     assert_kind_of(URI::SMB, u)
@@ -76,6 +76,13 @@ class TestSMB < Test::Unit::TestCase
     assert_equal('smb', u.scheme)
     assert_equal('foo_bar', u.host)
     assert_equal('/share/path', u.path)
+
+    assert_nothing_raised(URI::InvalidURIError) do
+      URI::SMB.parse('smb://foo_barxxxxxxxx/share/path')
+    end
+    assert_raise(URI::InvalidURIError) do
+      URI::SMB.parse('smb://foo_barxxxxxxxxx/share/path')
+    end
   end
 end
 
