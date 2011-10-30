@@ -24,13 +24,20 @@ module URI
       :broadcast, :nodetype, :scopeid,
     ].freeze
 
+    NODETYPE = [
+      NODETYPE_BROADCAST =      'b',
+      NODETYPE_P2P =            'p',
+      NODETYPE_MIXED =          'm',
+      NODETYPE_HYBRID =         'h',
+    ].freeze
+
     URI::REGEXP::PATTERN.const_set(
       :NETBIOSHOSTNAME,
       '[a-zA-Z\d_][a-zA-Z\d_\-]{1,14}'
     )
     URI.const_set(
       :NETBIOSHOSTNAME,
-      Regexp.new(URI::REGEXP::PATTERN::NETBIOSHOSTNAME)
+      Regexp.new("^#{URI::REGEXP::PATTERN::NETBIOSHOSTNAME}$")
     )
     URI::REGEXP::PATTERN.const_set(
       :SMBHOSTNAME,
@@ -38,7 +45,7 @@ module URI
     )
     URI.const_set(
       :SMBHOSTNAME,
-      Regexp.new(URI::REGEXP::PATTERN::SMBHOSTNAME)
+      Regexp.new("^#{URI::REGEXP::PATTERN::SMBHOSTNAME}$")
     )
 
     DEFAULT_PARSER = URI::Parser.new(:HOSTNAME=>URI::REGEXP::PATTERN::SMBHOSTNAME)
@@ -128,6 +135,15 @@ module URI
       return @share ? @share : ''
     end
 
+    def check_share(v)
+      check_path('/' + v)
+      if v && v.include?('/')
+        raise InvalidURIError,
+              "bad share conponent ('/' not allowed): #{v}"
+      end
+    end
+    private :check_share
+
     def set_share(v)
       @share = v
       build_path
@@ -135,10 +151,24 @@ module URI
     end
     protected :set_share
 
+    def share=(v)
+      check_share(v)
+      set_share(v)
+    end
+
+    ## returns the NetBIOS name server (WINS) address.
     def nbns
       return @nbns
     end
     alias :wins :nbns
+
+    def check_nbns(v)
+      if v && v!='' && self.parser.regexp[:HOST] !~ v
+        raise InvalidURIError,
+              "bad NetBIOS name server (WINS) address: #{v}"
+      end
+    end
+    private :check_nbns
 
     def set_nbns(v)
       @nbns = v
@@ -147,10 +177,24 @@ module URI
     end
     protected :set_nbns
 
+    def nbns=(v)
+      check_nbns(v)
+      set_nbns(v)
+    end
+
+    ## returns the workgroup (or NT domain) name.
     def workgroup
       return @workgroup
     end
-    alias :ntdoain :workgroup
+    alias :ntdomain :workgroup
+
+    def check_workgroup(v)
+      if v && v!='' && self.parser.regexp[:HOST] !~ v
+        raise InvalidURIError,
+              "bad NetBIOS workgroup (or NT domain) name: #{v}"
+      end
+    end
+    private :check_workgroup
 
     def set_workgroup(v)
       @workgroup = v
@@ -159,9 +203,23 @@ module URI
     end
     protected :set_workgroup
 
+    def workgroup=(v)
+      check_workgroup(v)
+      set_workgroup(v)
+    end
+
+    ## returns the NetBIOS source name or address.
     def calling
       return @calling
     end
+
+    def check_calling(v)
+      if v && v!='' && self.parser.regexp[:HOST] !~ v
+        raise InvalidURIError,
+              "bad NetBIOS calling (source) name: #{v}"
+      end
+    end
+    private :check_calling
 
     def set_calling(v)
       @calling = v
@@ -170,9 +228,23 @@ module URI
     end
     protected :set_calling
 
+    def calling=(v)
+      check_calling(v)
+      set_calling(v)
+    end
+
+    ## returns the NetBIOS destination name or address.
     def called
       return @called
     end
+
+    def check_called(v)
+      if v && v!='' && self.parser.regexp[:HOST] !~ v
+        raise InvalidURIError,
+              "bad NetBIOS called (destination) name: #{v}"
+      end
+    end
+    private :check_called
 
     def set_called(v)
       @called = v
@@ -181,9 +253,20 @@ module URI
     end
     protected :set_called
 
+    def called=(v)
+      check_called(v)
+      set_called(v)
+    end
+
+    ## returns the broadcast address.
     def broadcast
       return @broadcast
     end
+
+    def check_broadcast(v)
+      ## FIXME
+    end
+    private :check_broadcast
 
     def set_broadcast(v)
       @broadcast = v
@@ -192,9 +275,23 @@ module URI
     end
     protected :set_broadcast
 
+    def broadcast=(v)
+      check_broadcast(v)
+      set_broadcast(v)
+    end
+
+    ## returns the NetBIOS node type.
     def nodetype
       return @nodetype
     end
+
+    def check_nodetype(v)
+      if v && v!='' && !NODETYPE.include?(v.downcase)
+        raise InvalidURIError,
+              "bad nodetype in SMB URI: #{v}"
+      end
+    end
+    private :check_nodetype
 
     def set_nodetype(v)
       @nodetype = v
@@ -203,9 +300,20 @@ module URI
     end
     protected :set_nodetype
 
+    def nodetype=(v)
+      check_nodetype(v)
+      set_nodetype(v)
+    end
+
+    ## returns the NetBIOS scope ID.
     def scopeid
       return @scopeid
     end
+
+    def check_scopeid(v)
+      ## FIXME
+    end
+    private :check_scopeid
 
     def set_scopeid(v)
       @scopeid = v
@@ -213,6 +321,11 @@ module URI
       return @scopeid
     end
     protected :set_scopeid
+
+    def scopeid=(v)
+      check_scopeid(v)
+      set_scopeid(v)
+    end
   end
 
   @@schemes['SMB'] = SMB
