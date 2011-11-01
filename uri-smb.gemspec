@@ -7,7 +7,7 @@ Gem::Specification.new do |s|
   s.version     = URI::SMB::VERSION
   s.authors     = ["SATOH Fumiyasu"]
   s.email       = ["fumiyas@osstech.co.jp"]
-  s.homepage    = ""
+  s.homepage    = "https://github.com/fumiyas/ruby-uri-smb"
   s.summary     = %q{SMB URI class}
   s.description = %q{SMB URI class}
 
