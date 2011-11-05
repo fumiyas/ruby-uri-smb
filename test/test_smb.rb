@@ -3,7 +3,7 @@ require 'uri/smb'
 
 module URI
 
-class TestSMB < Test::Unit::TestCase
+class SMBTest < Test::Unit::TestCase
   def setup
   end
 
